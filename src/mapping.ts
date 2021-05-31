@@ -1,22 +1,27 @@
-import { NewGravatar, UpdatedGravatar } from '../generated/Gravity/Gravity'
-import { Gravatar } from '../generated/schema'
+import { CreateVault, DestroyVault, TransferVault, DepositCollateral, WithdrawCollateral, BorrowToken, PayBackToken, BuyRiskyVault } from '../generated/QiStablecoin/QiStablecoin'
+import { loadVault } from './utils'
 
-export function handleNewGravatar(event: NewGravatar): void {
-  let gravatar = new Gravatar(event.params.id.toHex())
-  gravatar.owner = event.params.owner
-  gravatar.displayName = event.params.displayName
-  gravatar.imageUrl = event.params.imageUrl
-  gravatar.save()
+export function handleCreateVault(event: CreateVault): void {
+  const vaultId = event.params.vaultID.toString()
+  const accountId = event.params.creator.toHexString()
+
+  const vault = loadVault(vaultId)
+
+  vault.account = accountId;
+  vault.save()
+  
 }
 
-export function handleUpdatedGravatar(event: UpdatedGravatar): void {
-  let id = event.params.id.toHex()
-  let gravatar = Gravatar.load(id)
-  if (gravatar == null) {
-    gravatar = new Gravatar(id)
-  }
-  gravatar.owner = event.params.owner
-  gravatar.displayName = event.params.displayName
-  gravatar.imageUrl = event.params.imageUrl
-  gravatar.save()
-}
+export function handleDestroyVault(event: DestroyVault): void {}
+
+export function handleTransferVault(event: TransferVault): void {}
+
+export function handleDepositCollateral(event: DepositCollateral): void {}
+
+export function handleWithdrawCollateral(event: WithdrawCollateral): void {}
+
+export function handleBorrowToken(event: BorrowToken): void {}
+
+export function handlePayBackToken(event: PayBackToken): void {}
+
+export function handleBuyRiskyVault(event: BuyRiskyVault): void {}

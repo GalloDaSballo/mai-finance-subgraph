@@ -2,13 +2,13 @@ specVersion: 0.0.2
 description: Gravatar for Ethereum
 repository: https://github.com/graphprotocol/example-subgraph
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: QiStablecoin
     network: matic
     source:
-      address: '0xa3Fa99A148fA48D14Ed51d610c367C61876997F1'
+      address: "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1"
       abi: QiStablecoin
       startBlock: 13976458
     mapping:
@@ -19,7 +19,7 @@ dataSources:
         - QiStablecoin
       abis:
         - name: QiStablecoin
-          file: ./abis/QiStablecoin.json
+          file: QiStablecoin/abis/QiStablecoin.json
       eventHandlers:
         - event: CreateVault(uint256,address)
           handler: handleCreateVault
@@ -27,20 +27,14 @@ dataSources:
           handler: handleDestroyVault
         - event: TransferVault(uint256,address,address)
           handler: handleTransferVault
-
         - event: DepositCollateral(uint256,uint256)
           handler: handleDepositCollateral
         - event: WithdrawCollateral(uint256,uint256)
           handler: handleWithdrawCollateral
-
         - event: BorrowToken(uint256,uint256)
           handler: handleBorrowToken
-
-
         - event: PayBackToken(uint256,uint256,uint256)
           handler: handlePayBackToken
-
         - event: BuyRiskyVault(uint256,address,address,uint256)
           handler: handleBuyRiskyVault
-
-      file: ./src/mapping.ts
+      file: QiStablecoin/QiStablecoin.wasm
