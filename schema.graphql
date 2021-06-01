@@ -1,6 +1,12 @@
 type Vault @entity {
   id: ID!
-  account: String!
+  account: Account!
   deposited: BigInt!
   borrowed: BigInt!
+  closingFees: BigInt!
+}
+
+type Account @entity {
+  id: ID!
+  vaults: [Vault!]! @derivedFrom(field: "account")
 }
