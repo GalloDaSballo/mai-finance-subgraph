@@ -12,6 +12,46 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
+export class Protocol extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Protocol entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Protocol entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Protocol", id.toString(), this);
+  }
+
+  static load(id: string): Protocol | null {
+    return store.get("Protocol", id) as Protocol | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get totalClosingFees(): BigInt {
+    let value = this.get("totalClosingFees");
+    return value.toBigInt();
+  }
+
+  set totalClosingFees(value: BigInt) {
+    this.set("totalClosingFees", Value.fromBigInt(value));
+  }
+}
+
 export class Vault extends Entity {
   constructor(id: string) {
     super();

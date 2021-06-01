@@ -1,5 +1,18 @@
 import { BigInt } from '@graphprotocol/graph-ts';
-import { Vault, Account } from '../generated/schema'
+import { Vault, Account, Protocol} from '../generated/schema'
+
+const PROTOCOL_V1 = "V1";
+
+export const loadProtocol = (): Protocol => {
+  let protocol = Protocol.load(PROTOCOL_V1)
+  if(!protocol){
+    protocol = new Protocol(PROTOCOL_V1)
+    protocol.totalClosingFees = BigInt.fromI32(0)
+  }
+
+  return protocol as Protocol
+}
+
 
 export const loadVault = (vaultId: string): Vault => {
   let vault = Vault.load(vaultId)

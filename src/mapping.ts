@@ -1,6 +1,6 @@
 import { BigInt } from '@graphprotocol/graph-ts';
 import { CreateVault, DestroyVault, TransferVault, DepositCollateral, WithdrawCollateral, BorrowToken, PayBackToken, BuyRiskyVault } from '../generated/QiStablecoin/QiStablecoin'
-import { loadAccount, loadVault } from './utils'
+import { loadAccount, loadProtocol, loadVault } from './utils'
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
@@ -69,6 +69,10 @@ export function handleBorrowToken(event: BorrowToken): void {
 export function handlePayBackToken(event: PayBackToken): void {
   const vaultId = event.params.vaultID.toString()
   const vault = loadVault(vaultId)
+
+  const protocol = loadProtocol()
+  protocol.totalClosingFees = protocol.totalClosingFees.plus(event.params.closingFee)
+  protocol.save()
 
   vault.closingFees = vault.closingFees.plus(event.params.closingFee)
   vault.borrowed = vault.borrowed.minus(event.params.amount)

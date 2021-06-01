@@ -1,8 +1,14 @@
+type Protocol @entity {
+  id: ID!
+  totalClosingFees: BigInt!
+}
+
 type Vault @entity {
   id: ID!
   account: Account!
   deposited: BigInt!
   borrowed: BigInt!
+  closingFees: BigInt!
 }
 
 type Account @entity {
