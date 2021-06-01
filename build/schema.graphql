@@ -9,6 +9,7 @@ type Vault @entity {
   deposited: BigInt!
   borrowed: BigInt!
   closingFees: BigInt!
+  collateralRatio: BigDecimal!
 }
 
 type Account @entity {

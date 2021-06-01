@@ -117,6 +117,15 @@ export class Vault extends Entity {
   set closingFees(value: BigInt) {
     this.set("closingFees", Value.fromBigInt(value));
   }
+
+  get collateralRatio(): BigDecimal {
+    let value = this.get("collateralRatio");
+    return value.toBigDecimal();
+  }
+
+  set collateralRatio(value: BigDecimal) {
+    this.set("collateralRatio", Value.fromBigDecimal(value));
+  }
 }
 
 export class Account extends Entity {
