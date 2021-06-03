@@ -47,6 +47,7 @@ export function handleDepositCollateral(event: DepositCollateral): void {
 
 
   vault.deposited = vault.deposited.plus(event.params.amount)
+
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
   } else {
@@ -96,7 +97,10 @@ export function handlePayBackToken(event: PayBackToken): void {
   protocol.save()
 
   vault.closingFees = vault.closingFees.plus(event.params.closingFee)
+
   vault.borrowed = vault.borrowed.minus(event.params.amount)
+  
+  vault.deposited = vault.deposited.minus(event.params.closingFee)
 
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())

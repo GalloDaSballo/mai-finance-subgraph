@@ -21,7 +21,6 @@ export const loadVault = (vaultId: string): Vault => {
     vault.deposited = BigInt.fromI32(0)
     vault.borrowed = BigInt.fromI32(0)
     vault.closingFees = BigInt.fromI32(0)
-    vault.collateralRatio = BigDecimal.fromString("0")
   }
 
   return vault as Vault
