@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { QiStablecoin, CreateVault, DestroyVault, TransferVault, DepositCollateral, WithdrawCollateral, BorrowToken, PayBackToken, BuyRiskyVault } from '../generated/QiStablecoin/QiStablecoin'
 import { loadAccount, loadProtocol, loadVault } from './utils'
 
@@ -51,7 +51,7 @@ export function handleDepositCollateral(event: DepositCollateral): void {
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
   } else {
-    vault.collateralRatio = 0
+    vault.collateralRatio = BigDecimal.fromString("0")
   }
   
   vault.save()
@@ -66,7 +66,7 @@ export function handleWithdrawCollateral(event: WithdrawCollateral): void {
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
   } else {
-    vault.collateralRatio = 0
+    vault.collateralRatio = BigDecimal.fromString("0")
   }
 
   vault.save()
@@ -81,7 +81,7 @@ export function handleBorrowToken(event: BorrowToken): void {
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
   } else {
-    vault.collateralRatio = 0
+    vault.collateralRatio = BigDecimal.fromString("0")
   }
 
   vault.save()
@@ -104,7 +104,7 @@ export function handlePayBackToken(event: PayBackToken): void {
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
   } else {
-    vault.collateralRatio = 0
+    vault.collateralRatio = BigDecimal.fromString("0")
   }
 
   vault.save()
@@ -125,7 +125,7 @@ export function handleBuyRiskyVault(event: BuyRiskyVault): void {
 
   // Pass ownership
   vault.account = event.params.buyer.toHexString()
-  vault.deposited = vault.deposited.minus(closingFee) // Fees are subtracted here
+  vault.deposited = vault.deposited.minus(paidFee) // Fees are subtracted here
 
 
   // Add closing Fees to protocol
@@ -137,7 +137,7 @@ export function handleBuyRiskyVault(event: BuyRiskyVault): void {
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
   } else {
-    vault.collateralRatio = 0
+    vault.collateralRatio = BigDecimal.fromString("0")
   }
   vault.save()
 }
