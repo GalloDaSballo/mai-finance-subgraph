@@ -50,7 +50,7 @@ export function handleDepositCollateral(event: DepositCollateral): void {
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
   } else {
-    vault.collateralRatio = vault.deposited.toBigDecimal()
+    vault.collateralRatio = 0
   }
   
   vault.save()
@@ -66,7 +66,7 @@ export function handleWithdrawCollateral(event: WithdrawCollateral): void {
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
   } else {
-    vault.collateralRatio = vault.deposited.toBigDecimal()
+    vault.collateralRatio = 0
   }
 
   vault.save()
@@ -81,7 +81,7 @@ export function handleBorrowToken(event: BorrowToken): void {
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
   } else {
-    vault.collateralRatio = vault.deposited.toBigDecimal()
+    vault.collateralRatio = 0
   }
 
   vault.save()
@@ -101,7 +101,7 @@ export function handlePayBackToken(event: PayBackToken): void {
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
   } else {
-    vault.collateralRatio = vault.deposited.toBigDecimal()
+    vault.collateralRatio = 0
   }
 
   vault.save()
@@ -134,7 +134,7 @@ export function handleBuyRiskyVault(event: BuyRiskyVault): void {
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
   } else {
-    vault.collateralRatio = vault.deposited.toBigDecimal()
+    vault.collateralRatio = 0
   }
   vault.save()
 }
