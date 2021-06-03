@@ -26,7 +26,7 @@ export function handleDestroyVault(event: DestroyVault): void {
   vault.account = account.id // Since we can't destroy, let's assign to zero address
   vault.deposited = BigInt.fromI32(0)
   vault.borrowed = BigInt.fromI32(0)
-
+  vault.save()
 }
 
 export function handleTransferVault(event: TransferVault): void {
@@ -55,7 +55,6 @@ export function handleDepositCollateral(event: DepositCollateral): void {
   }
   
   vault.save()
-
 }
 
 export function handleWithdrawCollateral(event: WithdrawCollateral): void {
