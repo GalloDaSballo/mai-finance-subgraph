@@ -7,10 +7,11 @@ const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 export function handleCreateVault(event: CreateVault): void {
   const vaultId = event.params.vaultID.toString()
   const accountId = event.params.creator.toHexString()
+
   const account = loadAccount(accountId)
   account.save()
-  const vault = loadVault(vaultId)
 
+  const vault = loadVault(vaultId)
   vault.account = accountId;
   vault.save()
   
@@ -44,7 +45,6 @@ export function handleTransferVault(event: TransferVault): void {
 export function handleDepositCollateral(event: DepositCollateral): void {
   const vaultId = event.params.vaultID.toString()
   const vault = loadVault(vaultId)
-
 
   vault.deposited = vault.deposited.plus(event.params.amount)
 
@@ -95,11 +95,10 @@ export function handlePayBackToken(event: PayBackToken): void {
   protocol.totalClosingFees = protocol.totalClosingFees.plus(event.params.closingFee)
   protocol.save()
 
-  vault.closingFees = vault.closingFees.plus(event.params.closingFee)
-
-  vault.borrowed = vault.borrowed.minus(event.params.amount)
   
+  vault.borrowed = vault.borrowed.minus(event.params.amount)
   vault.deposited = vault.deposited.minus(event.params.closingFee)
+  vault.closingFees = vault.closingFees.plus(event.params.closingFee)
 
   if(vault.borrowed.gt(BigInt.fromI32(0))){
     vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
@@ -126,7 +125,7 @@ export function handleBuyRiskyVault(event: BuyRiskyVault): void {
   // Pass ownership
   vault.account = event.params.buyer.toHexString()
   vault.deposited = vault.deposited.minus(paidFee) // Fees are subtracted here
-
+  vault.borrowed = contract.vaultDebt(event.params.vaultID);
 
   // Add closing Fees to protocol
   const protocol = loadProtocol()
