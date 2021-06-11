@@ -126,6 +126,117 @@ export class Vault extends Entity {
   set collateralRatio(value: BigDecimal) {
     this.set("collateralRatio", Value.fromBigDecimal(value));
   }
+
+  get liquidations(): Array<string> | null {
+    let value = this.get("liquidations");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set liquidations(value: Array<string> | null) {
+    if (value === null) {
+      this.unset("liquidations");
+    } else {
+      this.set("liquidations", Value.fromStringArray(value as Array<string>));
+    }
+  }
+}
+
+export class Liquidation extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Liquidation entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Liquidation entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Liquidation", id.toString(), this);
+  }
+
+  static load(id: string): Liquidation | null {
+    return store.get("Liquidation", id) as Liquidation | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get loss(): BigInt {
+    let value = this.get("loss");
+    return value.toBigInt();
+  }
+
+  set loss(value: BigInt) {
+    this.set("loss", Value.fromBigInt(value));
+  }
+
+  get debt(): BigInt {
+    let value = this.get("debt");
+    return value.toBigInt();
+  }
+
+  set debt(value: BigInt) {
+    this.set("debt", Value.fromBigInt(value));
+  }
+
+  get ethPriceAtTime(): BigInt {
+    let value = this.get("ethPriceAtTime");
+    return value.toBigInt();
+  }
+
+  set ethPriceAtTime(value: BigInt) {
+    this.set("ethPriceAtTime", Value.fromBigInt(value));
+  }
+
+  get tokenPriceAtTime(): BigInt {
+    let value = this.get("tokenPriceAtTime");
+    return value.toBigInt();
+  }
+
+  set tokenPriceAtTime(value: BigInt) {
+    this.set("tokenPriceAtTime", Value.fromBigInt(value));
+  }
+
+  get vault(): string {
+    let value = this.get("vault");
+    return value.toString();
+  }
+
+  set vault(value: string) {
+    this.set("vault", Value.fromString(value));
+  }
+
+  get account(): string {
+    let value = this.get("account");
+    return value.toString();
+  }
+
+  set account(value: string) {
+    this.set("account", Value.fromString(value));
+  }
 }
 
 export class Account extends Entity {
@@ -165,5 +276,14 @@ export class Account extends Entity {
 
   set vaults(value: Array<string>) {
     this.set("vaults", Value.fromStringArray(value));
+  }
+
+  get liquidations(): Array<string> {
+    let value = this.get("liquidations");
+    return value.toStringArray();
+  }
+
+  set liquidations(value: Array<string>) {
+    this.set("liquidations", Value.fromStringArray(value));
   }
 }

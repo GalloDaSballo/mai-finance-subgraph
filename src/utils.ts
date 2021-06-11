@@ -1,5 +1,5 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
-import { Vault, Account, Protocol} from '../generated/schema'
+import { Vault, Account, Protocol, Liquidation} from '../generated/schema'
 
 const PROTOCOL_V1 = "V1";
 
@@ -13,7 +13,6 @@ export const loadProtocol = (): Protocol => {
   return protocol as Protocol
 }
 
-
 export const loadVault = (vaultId: string): Vault => {
   let vault = Vault.load(vaultId)
   if(!vault){
@@ -25,6 +24,22 @@ export const loadVault = (vaultId: string): Vault => {
   }
 
   return vault as Vault
+}
+
+export const loadLiquidation = (liquidationId: string): Liquidation => {
+  let liquidation = Liquidation.load(liquidationId)
+  if(!liquidation){
+    liquidation = new Liquidation(liquidationId)
+    liquidation.timestamp = BigInt.fromI32(0)
+    liquidation.loss =  BigInt.fromI32(0)
+    liquidation.debt =  BigInt.fromI32(0)
+    liquidation.ethPriceAtTime =  BigInt.fromI32(0)
+    liquidation.tokenPriceAtTime =  BigInt.fromI32(0)
+    liquidation.vault = ""
+    liquidation.account = ""
+  }
+
+  return liquidation as Liquidation
 }
 
 

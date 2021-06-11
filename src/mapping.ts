@@ -1,6 +1,6 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { QiStablecoin, CreateVault, DestroyVault, TransferVault, DepositCollateral, WithdrawCollateral, BorrowToken, PayBackToken, BuyRiskyVault } from '../generated/QiStablecoin/QiStablecoin'
-import { loadAccount, loadProtocol, loadVault } from './utils'
+import { loadAccount, loadLiquidation, loadProtocol, loadVault } from './utils'
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
@@ -113,6 +113,8 @@ export function handleBuyRiskyVault(event: BuyRiskyVault): void {
   const vaultId = event.params.vaultID.toString()
   const vault = loadVault(vaultId)
 
+
+
   // Get contract state to calculate closing fee
   let contract = QiStablecoin.bind(event.address)
 
@@ -122,10 +124,26 @@ export function handleBuyRiskyVault(event: BuyRiskyVault): void {
   const debtDifference = event.params.amountPaid
   const paidFee = (debtDifference.times(closingFee).times(tokenPrice)).div(ethPrice.times(BigInt.fromI32(10000)));
 
+  // Liquidation
+  const liquidationId = vault.id + "" + event.block.timestamp.toString()
+  const liquidation = loadLiquidation(liquidationId)
+  liquidation.timestamp = event.block.timestamp
+  liquidation.loss = vault.deposited
+  liquidation.debt = vault.borrowed
+  liquidation.vault = vault.id
+  liquidation.ethPriceAtTime = ethPrice
+  liquidation.tokenPriceAtTime = tokenPrice
+  liquidation.account = vault.account
+
+  liquidation.save()
+
+
   // Pass ownership
   vault.account = event.params.buyer.toHexString()
   vault.deposited = vault.deposited.minus(paidFee) // Fees are subtracted here
   vault.borrowed = contract.vaultDebt(event.params.vaultID);
+
+
 
   // Add closing Fees to protocol
   const protocol = loadProtocol()

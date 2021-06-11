@@ -10,9 +10,22 @@ type Vault @entity {
   borrowed: BigInt!
   closingFees: BigInt!
   collateralRatio: BigDecimal!
+  liquidations: [Liquidation!] @derivedFrom(field: "vault")
+}
+
+type Liquidation @entity {
+  id: ID!
+  timestamp: BigInt!
+  loss: BigInt!
+  debt: BigInt!
+  ethPriceAtTime: BigInt!
+  tokenPriceAtTime: BigInt!
+  vault: Vault!
+  account: Account!
 }
 
 type Account @entity {
   id: ID!
   vaults: [Vault!]! @derivedFrom(field: "account")
+  liquidations: [Liquidation!]! @derivedFrom(field: "account")
 }
