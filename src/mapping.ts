@@ -162,18 +162,28 @@ export function handleBuyRiskyVault(event: BuyRiskyVault): void {
 
   liquidation.save()
 
+  const oldBorrowed = vault.borrowed
 
   // Pass ownership
   vault.account = event.params.buyer.toHexString()
   vault.deposited = vault.deposited.minus(paidFee) // Fees are subtracted here
   vault.borrowed = contract.vaultDebt(event.params.vaultID);
 
-
   // Add closing Fees to protocol
   const protocol = loadProtocol()
   protocol.totalClosingFees = protocol.totalClosingFees.plus(paidFee)
   protocol.totalDeposited = protocol.totalDeposited.minus(paidFee) // Fees go from deposited
-  protocol.totalBorrowed = protocol.totalBorrowed.minus(debtDifference) // debtDifference is burned hence it reduces totalBorrowed
+
+  // Update protocolBorrowed
+  if (oldBorrowed.gt(vault.borrowed)) {
+    // Vault has less debt
+    protocol.totalBorrowed = protocol.totalBorrowed.minus(oldBorrowed.minus(vault.borrowed))
+  }
+
+  if(oldBorrowed.lt(vault.borrowed)){
+    // I don't believe this ever happens
+    protocol.totalBorrowed = protocol.totalBorrowed.plus(vault.borrowed.minus(oldBorrowed))
+  }
 
 
   // Recalculate Collaterals
