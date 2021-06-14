@@ -1,5 +1,6 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { QiStablecoin, CreateVault, DestroyVault, TransferVault, DepositCollateral, WithdrawCollateral, BorrowToken, PayBackToken, BuyRiskyVault } from '../generated/QiStablecoin/QiStablecoin'
+import { calculateProtocolCollateralRatio, calculateVaultCollateRatio } from './ratios';
 import { loadAccount, loadLiquidation, loadProtocol, loadVault } from './utils'
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
@@ -47,13 +48,13 @@ export function handleDepositCollateral(event: DepositCollateral): void {
   const vault = loadVault(vaultId)
 
   vault.deposited = vault.deposited.plus(event.params.amount)
+  const protocol = loadProtocol()
+  protocol.totalDeposited = protocol.totalDeposited.plus(event.params.amount)
 
-  if(vault.borrowed.gt(BigInt.fromI32(0))){
-    vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
-  } else {
-    vault.collateralRatio = BigDecimal.fromString("0")
-  }
-  
+  calculateVaultCollateRatio(vault)
+  calculateProtocolCollateralRatio(protocol)
+
+  protocol.save()
   vault.save()
 }
 
@@ -63,12 +64,14 @@ export function handleWithdrawCollateral(event: WithdrawCollateral): void {
 
   vault.deposited = vault.deposited.minus(event.params.amount)
 
-  if(vault.borrowed.gt(BigInt.fromI32(0))){
-    vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
-  } else {
-    vault.collateralRatio = BigDecimal.fromString("0")
-  }
+  const protocol = loadProtocol()
+  protocol.totalDeposited = protocol.totalDeposited.minus(event.params.amount)
 
+
+  calculateVaultCollateRatio(vault)
+  calculateProtocolCollateralRatio(protocol)
+
+  protocol.save()
   vault.save()
 }
 
@@ -77,13 +80,14 @@ export function handleBorrowToken(event: BorrowToken): void {
   const vault = loadVault(vaultId)
 
   vault.borrowed = vault.borrowed.plus(event.params.amount)
+  
+  const protocol = loadProtocol()
+  protocol.totalBorrowed = protocol.totalBorrowed.plus(event.params.amount)
 
-  if(vault.borrowed.gt(BigInt.fromI32(0))){
-    vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
-  } else {
-    vault.collateralRatio = BigDecimal.fromString("0")
-  }
+  calculateVaultCollateRatio(vault)
+  calculateProtocolCollateralRatio(protocol)
 
+  protocol.save()
   vault.save()
 }
 
@@ -92,20 +96,19 @@ export function handlePayBackToken(event: PayBackToken): void {
   const vault = loadVault(vaultId)
 
   const protocol = loadProtocol()
+  protocol.totalBorrowed = protocol.totalBorrowed.minus(event.params.amount)
+  protocol.totalDeposited = protocol.totalDeposited.minus(event.params.closingFee)
   protocol.totalClosingFees = protocol.totalClosingFees.plus(event.params.closingFee)
-  protocol.save()
-
   
   vault.borrowed = vault.borrowed.minus(event.params.amount)
   vault.deposited = vault.deposited.minus(event.params.closingFee)
   vault.closingFees = vault.closingFees.plus(event.params.closingFee)
 
-  if(vault.borrowed.gt(BigInt.fromI32(0))){
-    vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
-  } else {
-    vault.collateralRatio = BigDecimal.fromString("0")
-  }
 
+  calculateVaultCollateRatio(vault)
+  calculateProtocolCollateralRatio(protocol)
+
+  protocol.save()
   vault.save()
 }
 
@@ -148,13 +151,14 @@ export function handleBuyRiskyVault(event: BuyRiskyVault): void {
   // Add closing Fees to protocol
   const protocol = loadProtocol()
   protocol.totalClosingFees = protocol.totalClosingFees.plus(paidFee)
-  protocol.save()
+  protocol.totalDeposited = protocol.totalDeposited.minus(paidFee) // Fees go from deposited
+  protocol.totalBorrowed = protocol.totalBorrowed.minus(debtDifference) // debtDifference is burned hence it reduces totalBorrowed
+
 
   // Recalculate collateralization ratio
-  if(vault.borrowed.gt(BigInt.fromI32(0))){
-    vault.collateralRatio = vault.deposited.toBigDecimal().div(vault.borrowed.toBigDecimal())
-  } else {
-    vault.collateralRatio = BigDecimal.fromString("0")
-  }
+  calculateVaultCollateRatio(vault)
+  calculateProtocolCollateralRatio(protocol)
+
+  protocol.save()
   vault.save()
 }

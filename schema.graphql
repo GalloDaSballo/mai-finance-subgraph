@@ -1,6 +1,9 @@
 type Protocol @entity {
   id: ID!
   totalClosingFees: BigInt!
+  averageCollateralRatio: BigDecimal!
+  totalDeposited: BigInt!
+  totalBorrowed: BigInt!
 }
 
 type Vault @entity {

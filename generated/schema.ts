@@ -50,6 +50,33 @@ export class Protocol extends Entity {
   set totalClosingFees(value: BigInt) {
     this.set("totalClosingFees", Value.fromBigInt(value));
   }
+
+  get averageCollateralRatio(): BigDecimal {
+    let value = this.get("averageCollateralRatio");
+    return value.toBigDecimal();
+  }
+
+  set averageCollateralRatio(value: BigDecimal) {
+    this.set("averageCollateralRatio", Value.fromBigDecimal(value));
+  }
+
+  get totalDeposited(): BigInt {
+    let value = this.get("totalDeposited");
+    return value.toBigInt();
+  }
+
+  set totalDeposited(value: BigInt) {
+    this.set("totalDeposited", Value.fromBigInt(value));
+  }
+
+  get totalBorrowed(): BigInt {
+    let value = this.get("totalBorrowed");
+    return value.toBigInt();
+  }
+
+  set totalBorrowed(value: BigInt) {
+    this.set("totalBorrowed", Value.fromBigInt(value));
+  }
 }
 
 export class Vault extends Entity {

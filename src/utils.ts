@@ -8,6 +8,9 @@ export const loadProtocol = (): Protocol => {
   if(!protocol){
     protocol = new Protocol(PROTOCOL_V1)
     protocol.totalClosingFees = BigInt.fromI32(0)
+    protocol.averageCollateralRatio = BigDecimal.fromString("0")
+    protocol.totalDeposited = BigInt.fromI32(0)
+    protocol.totalBorrowed = BigInt.fromI32(0)
   }
 
   return protocol as Protocol
