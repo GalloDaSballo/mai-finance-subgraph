@@ -166,12 +166,12 @@ export function handleBuyRiskyVault(event: BuyRiskyVault): void {
 
   // Pass ownership
   vault.account = event.params.buyer.toHexString()
-  vault.deposited = vault.deposited.minus(paidFee) // Fees are subtracted here
+  vault.deposited = contract.vaultCollateral(event.params.vaultID) 
   vault.borrowed = contract.vaultDebt(event.params.vaultID);
 
   // Add closing Fees to protocol
   const protocol = loadProtocol()
-  protocol.totalClosingFees = protocol.totalClosingFees.plus(paidFee)
+  protocol.totalClosingFees = protocol.totalClosingFees.plus(paidFee) // Fees are subtracted here
   protocol.totalDeposited = protocol.totalDeposited.minus(paidFee) // Fees go from deposited
 
   // Update protocolBorrowed
