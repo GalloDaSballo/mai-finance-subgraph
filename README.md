@@ -8,10 +8,9 @@ Track Vaults, Accounts and Protocol Level Data
 
 ## Entities
 Vault ← Vault for deposit and borrow
-
 Account ← Address that has vaults
-
 Protocol ← Used to calculate total fees
+Liquidation ← Event of being liquidated
 
 ## Examples
 
@@ -61,14 +60,98 @@ vaults(first: 5) {
   }
 ```
 
-Get protocol lifetime closing fees
+Get protocol lifetime closing fees, deposits and miMatic minted
 
 ```jsx
 {
   protocols(first: 1) {
     id
+		totalBorrowed
+    totalDeposited
     totalClosingFees
+	}
+}
+```
+
+
+## Liquidations
+Find liquidations by Account
+```jsx
+{
+  liquidations(first: 5, where: {account: "0x123"}) {
+    id
+    loss
+    debt
+    vault {
+      id
+    }
+    account {
+      id
+    }
+	}
+}
+
+```
+
+Find liquidations by Vault
+```jsx
+{
+  liquidations(first: 5, where: {vault: 113}) {
+    id
+    loss
+    debt
+    vault {
+      id
+    }
+    account {
+      id
+    }
+	}
+}
+
+```
+
+## Historical Queries
+Find vaults before block 1.4MLN
+```jsx
+{
+  vaults(first: 5, block: {number:14000000}) {
+    id
+    account {
+      id
+    }
+    deposited
+    borrowed
   }
+}
+```
+
+Protocol data at block 1.4MLN
+```jsx
+{
+  protocols(first: 5, block: {number:14000000}) {
+    id
+		totalBorrowed
+    totalDeposited
+    totalClosingFees
+	}
+} 
+```
+
+Liquidations query with timestamp
+```jsx
+{
+  liquidations(first: 5, where: {account: "0x123", timestamp_gt: 123123123}, ) {
+    id
+    loss
+    debt
+    vault {
+      id
+    }
+    account {
+      id
+    }
+	}
 }
 ```
 
